@@ -1,0 +1,98 @@
+app/backend/node_modules/
+app/backend/.env
+app/ai-service/node_modules/
+client_secret_952637023570-2541n5tkc4evp7crrbd86p1qi5ja34o9.apps.googleusercontent.com.json
+# ======================
+# ENV FILES
+# ======================
+.env
+.env.*
+!.env.example
+# ======================
+# DEPENDENCIES
+# ======================
+node_modules/
+`
+# ======================
+# LOGS
+# ======================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ======================
+# BUILD OUTPUTS
+# ======================
+dist/
+build/
+coverage/
+
+# ======================
+# OS FILES
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# IDE FILES
+# ======================
+.vscode/
+.idea/
+
+# ======================
+# REACT NATIVE
+# ======================
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+*.keystore
+*.jks
+
+# iOS
+ios/build/
+ios/Pods/
+*.xcworkspace
+
+# Metro
+.metro-health-check*
+
+# React Native Debugger
+.react-native/
+
+# ======================
+# CACHE
+# ======================
+.cache/
+.parcel-cache/
+.npm/
+.eslintcache
+.stylelintcache
+
+# ======================
+# TEMP FILES
+# ======================
+tmp/
+temp/
+*.tmp
+
+# ======================
+# MONGODB
+# ======================
+mongodb-data/
+
+# ======================
+# TESTING
+# ======================
+.nyc_output/
+
+# ======================
+# MISC
+# ======================
+*.pid
+*.seed
+*.pid.lock
