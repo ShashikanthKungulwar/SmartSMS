@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
     password:{
         type:String,
         minlength:8,
-        maxlength:15
+        maxlength:128
     },
     email:{
         type:String,
@@ -33,10 +33,13 @@ const UserSchema = new mongoose.Schema({
         type:String
     }
 });
-// learning 
+// learning : arrow funcitons dont have "this"
+// also second bug was liek without checking isModified we are 
+// rehasing and hasing which was causing mistake also took care of it
 UserSchema.pre('save', async function(){
-    // console.log(this)
-
+    if (!this.isModified('password')) {
+        return;
+    }
     if(this.password)
         this.password = await bcrypt.hash(this.password,10)  
     // console.log(this.password)

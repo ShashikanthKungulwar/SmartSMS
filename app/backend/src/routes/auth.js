@@ -72,9 +72,10 @@ router.post("/login",async (req,res)=>{
             return res.status(400).json({error:"Email and password required"});
         }
         const user =await User.findOne({email});
+        // console.log(await user.matchPassword(password))
 
         if(!user || user.authprovider !== 'local' || !(await user.matchPassword(password))){
-            return res.status(401).json({error:"Invalid Error"})
+            return res.status(401).json({error:"Invalid User credentials"})
         };
 
         const tokens = makeTokens(user._id);
@@ -83,11 +84,12 @@ router.post("/login",async (req,res)=>{
         res.json(tokens);
     }
     catch(error){
+        // console.log("check check")
         res.status(500).json({error:error.message});
     }
 })
 
-
+//need to check this route after creating frontend
 router.post("/google",async (req,res)=>{
     try{        
         const {idToken} = req.body;
