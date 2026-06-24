@@ -33,9 +33,13 @@ const UserSchema = new mongoose.Schema({
         type:String
     }
 });
+// learning 
+UserSchema.pre('save', async function(){
+    // console.log(this)
 
-UserSchema.pre('save', async ()=>{
-    this.password = await bcrypt.hash(this.password,10)  
+    if(this.password)
+        this.password = await bcrypt.hash(this.password,10)  
+    // console.log(this.password)
 })
 
 UserSchema.methods.matchPassword = async function(enteredPassword){

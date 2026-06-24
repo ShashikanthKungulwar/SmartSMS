@@ -5,7 +5,9 @@ import authMiddleWare from "./middleware/auth.js";
 import User from "./models/Users.js";
 import dotenv from "dotenv"
 import router from './routes/auth.js'
-dotenv.config()
+dotenv.config(
+    {path: "../../.env"}
+)
 
 // await dBconnection();
 const app = express();

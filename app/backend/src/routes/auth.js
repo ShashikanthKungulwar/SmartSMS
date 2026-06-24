@@ -28,22 +28,30 @@ const makeTokens =  (userId) =>({
 router.post('/register',async (req,res)=>{
     
     try{
-        const{email,password} = req.body;
+        const{email,password,name} = req.body;
+        
         if(!email || !password){
             return res.status(400).json({error:"Email and password required"});
         }
         if(!validator.isEmail(email)){
             return res.status(400).json({error:"Invalid email format"})
         }
+
         if(password.length <8){
             return res.status(400).json({error:"password min length is 8"});
         }
+        
         if(await User.findOne({email})) return res.status(409).json({error:"Email alredy registered"});
+        // console.log("check here only")
+
         const user = await User.create({
             email:email,
             password:password,
-            authProvider:"local"
+            name:name,
+            authprovider:"local"
         });
+        // console.log("check here only")
+
         const tokens = makeTokens(user._id)
         user.refreshToken = tokens.refreshToken;
 
@@ -51,6 +59,7 @@ router.post('/register',async (req,res)=>{
         res.status(201).json(tokens);
     }
     catch(error){
+        console.log(error);
         res.status(500).json({error : error.message});
     }
 })
@@ -64,7 +73,7 @@ router.post("/login",async (req,res)=>{
         }
         const user =await User.findOne({email});
 
-        if(!user || user.authProvider !== 'local' || !(await user.matchPassword(password))){
+        if(!user || user.authprovider !== 'local' || !(await user.matchPassword(password))){
             return res.status(401).json({error:"Invalid Error"})
         };
 
@@ -97,7 +106,7 @@ router.post("/google",async (req,res)=>{
             user = await User.findOne({email:payload.email})
             if(user){
                 //updating local to google auth
-                user.authProvider="google";
+                user.authprovider="google";
                 user.avatar = payload.picture;
                 user.googleId = payload.sub;
                 await user.save();
@@ -106,7 +115,7 @@ router.post("/google",async (req,res)=>{
                 user = await User.create({
                     email:payload.email,
                     name:payload.name,
-                    authProvider:"google",
+                    authprovider:"google",
                     googleId:payload.sub,
                     avatar:payload.picture
                 })
