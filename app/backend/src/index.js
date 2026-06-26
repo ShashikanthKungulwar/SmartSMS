@@ -1,15 +1,18 @@
+import dotenv from "dotenv"
+dotenv.config(
+    {path: "../../.env"}
+)
+console.log(process.env);
+
 import dBconnection from "./config/db.js";
 import cors from "cors"
 import express, { Router } from "express"
 import authMiddleWare from "./middleware/auth.js";
 import User from "./models/Users.js";
-import dotenv from "dotenv"
 import authRouter from './routes/auth.js'
 import ruleRouter from "./routes/rules.js"
+import smsRouter from './routes/sms.js';
 
-dotenv.config(
-    {path: "../../.env"}
-)
 
 // await dBconnection();
 const app = express();
@@ -18,7 +21,7 @@ app.use(express.json())
 
 app.use('/api/auth',authRouter)
 app.use('/api/rules',ruleRouter)
-
+app.use('/api/sms', smsRouter);
 
 app.get('/api/me',authMiddleWare,async(req,res)=>{
     // console.log("check");
