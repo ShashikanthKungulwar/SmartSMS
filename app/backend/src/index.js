@@ -4,7 +4,9 @@ import express, { Router } from "express"
 import authMiddleWare from "./middleware/auth.js";
 import User from "./models/Users.js";
 import dotenv from "dotenv"
-import router from './routes/auth.js'
+import authRouter from './routes/auth.js'
+import ruleRouter from "./routes/rules.js"
+
 dotenv.config(
     {path: "../../.env"}
 )
@@ -14,12 +16,17 @@ const app = express();
 app.use(cors());
 app.use(express.json())
 
-app.use('/api/auth',router)
+app.use('/api/auth',authRouter)
+app.use('/api/rules',ruleRouter)
+
+
 app.get('/api/me',authMiddleWare,async(req,res)=>{
     // console.log("check");
     const user = await User.findById(req.user.id).select('-password -refreshToken');
     res.json(user);
 })
+
+
 
 dBconnection()
 .then(()=>{
