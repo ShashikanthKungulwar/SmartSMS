@@ -12,7 +12,8 @@ import User from "./models/Users.js";
 import authRouter from './routes/auth.js'
 import ruleRouter from "./routes/rules.js"
 import smsRouter from './routes/sms.js';
-
+import deviceRouter from './routes/devices.js'
+import errorhandler from "./middleware/errors.js";
 
 // await dBconnection();
 const app = express();
@@ -22,6 +23,8 @@ app.use(express.json())
 app.use('/api/auth',authRouter)
 app.use('/api/rules',ruleRouter)
 app.use('/api/sms', smsRouter);
+app.use('/api/device',deviceRouter);
+
 
 app.get('/api/me',authMiddleWare,async(req,res)=>{
     // console.log("check");
@@ -30,6 +33,8 @@ app.get('/api/me',authMiddleWare,async(req,res)=>{
 })
 
 
+
+app.use(errorhandler);
 
 dBconnection()
 .then(()=>{

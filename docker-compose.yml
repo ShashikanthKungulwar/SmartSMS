@@ -16,5 +16,16 @@ services:
     ports: ["27018:27017"]
     volumes: [mongo-data:/data/db]
 
+  redis:                          # ← add this entire block
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight:/data
 volumes:
   mongo-data:
+  redisinsight:
