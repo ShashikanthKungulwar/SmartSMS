@@ -2,7 +2,8 @@ import dotenv from "dotenv"
 dotenv.config(
     {path: "../../.env"}
 )
-console.log(process.env);
+import cors from "cors";
+
 
 import dBconnection from "./config/db.js";
 import cors from "cors"

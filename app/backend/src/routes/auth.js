@@ -6,7 +6,7 @@ import {OAuth2Client} from 'google-auth-library';
 import validator from "validator"
 
 console.log("Auth router loaded");
-console.log(process.env.GOOGLE_CLIENT_ID);
+// console.log(process.env.GOOGLE_CLIENT_ID);
 
 const router = express.Router();
 const googleClinet = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
