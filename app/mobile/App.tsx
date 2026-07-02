@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import { AuthApi } from './src/api/auth';
+import { triggerCleanNow } from './src/native/SmsNative';
 // import { AuthApi } from './src/api/auth';
 
 // inside your home screen component
@@ -81,7 +82,7 @@ export default function App() {
      </View> */}
 
 
-  <View sty le={[styles.header, { zIndex: 10, elevation: 10 }]}>
+  <View style={[styles.header, { zIndex: 10, elevation: 10 }]}>
     <Text style={styles.title}>SmartSMS</Text>
     <TouchableOpacity
       onPress={async () => {
@@ -92,6 +93,15 @@ export default function App() {
       style={styles.logoutBtn}
     >
       <Text style={styles.logout}>Logout</Text>
+    </TouchableOpacity>
+    <TouchableOpacity
+    onPress={() => {
+      triggerCleanNow();
+        console.log('Clean job triggered');
+      }}
+      style={{ padding: 10, backgroundColor: '#1D9E75', borderRadius: 8, margin: 8 }}
+      >
+      <Text style={{ color: '#fff', textAlign: 'center' }}>Run Clean Now</Text>
     </TouchableOpacity>
   </View>
 

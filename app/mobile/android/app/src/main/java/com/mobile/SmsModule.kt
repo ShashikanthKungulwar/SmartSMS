@@ -11,6 +11,10 @@ class SmsModule(private val reactContext: ReactApplicationContext) :
     override fun getName() = "SmsModule"
 
     @ReactMethod
+    fun triggerCleanNow() {
+        com.mobile.util.WorkScheduler.runNow(reactContext)
+    }
+    @ReactMethod
     fun getSmsFromInbox(maxCount: Int, promise: Promise) {
         try {
             if (ContextCompat.checkSelfPermission(reactContext, android.Manifest.permission.READ_SMS)

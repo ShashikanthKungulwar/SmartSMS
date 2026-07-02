@@ -6,6 +6,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+import com.mobile.util.WorkScheduler
 
 class MainApplication : Application(), ReactApplication {
 
@@ -22,5 +23,6 @@ class MainApplication : Application(), ReactApplication {
   override fun onCreate() {
     super.onCreate()
     loadReactNative(this)
+    WorkScheduler.schedule(this, intervalHours = 1)
   }
 }

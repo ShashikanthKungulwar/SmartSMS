@@ -17,3 +17,8 @@ export function getSmsFromInbox(maxCount = 20): Promise<Sms[]> {
 export function deleteSms(smsId: string): Promise<boolean> {
   return SmsModule.deleteSms(smsId);
 }
+
+export function triggerCleanNow(): void {
+  console.log(SmsModule);
+  SmsModule.triggerCleanNow();
+}
