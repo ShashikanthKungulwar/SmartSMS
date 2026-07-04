@@ -11,8 +11,9 @@ class SmsModule(private val reactContext: ReactApplicationContext) :
     override fun getName() = "SmsModule"
 
     @ReactMethod
-    fun triggerCleanNow() {
+    fun triggerCleanNow(promise: Promise) {
         com.mobile.util.WorkScheduler.runNow(reactContext)
+        promise.resolve(true)
     }
     @ReactMethod
     fun getSmsFromInbox(maxCount: Int, promise: Promise) {

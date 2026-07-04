@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import { AuthApi } from './src/api/auth';
-import { triggerCleanNow } from './src/native/SmsNative';
+import { triggerCleanNow, onSmsReceived } from './src/native/SmsNative';
 // import { AuthApi } from './src/api/auth';
 
 // inside your home screen component
@@ -38,6 +38,13 @@ export default function App() {
       if (granted) load();
     });
     return () => task.cancel();
+  }, [load]);
+
+  useEffect(() => {
+    const unsubscribe = onSmsReceived(() => {
+      load();
+    });
+    return unsubscribe;
   }, [load]);
 
 
@@ -95,9 +102,10 @@ export default function App() {
       <Text style={styles.logout}>Logout</Text>
     </TouchableOpacity>
     <TouchableOpacity
-    onPress={() => {
-      triggerCleanNow();
-        console.log('Clean job triggered');
+    onPress={async () => {
+      await triggerCleanNow();
+      console.log('Clean job triggered');
+      setTimeout(() => load(), 2000);
       }}
       style={{ padding: 10, backgroundColor: '#1D9E75', borderRadius: 8, margin: 8 }}
       >

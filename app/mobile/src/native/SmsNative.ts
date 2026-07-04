@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, DeviceEventEmitter } from 'react-native';
 
 const { SmsModule } = NativeModules;
 
@@ -10,6 +10,11 @@ export interface Sms {
   read: number;
 }
 
+export interface IncomingSms {
+  sender: string;
+  body: string;
+}
+
 export function getSmsFromInbox(maxCount = 20): Promise<Sms[]> {
   return SmsModule.getSmsFromInbox(maxCount);
 }
@@ -18,7 +23,11 @@ export function deleteSms(smsId: string): Promise<boolean> {
   return SmsModule.deleteSms(smsId);
 }
 
-export function triggerCleanNow(): void {
-  console.log(SmsModule);
-  SmsModule.triggerCleanNow();
+export function triggerCleanNow(): Promise<boolean> {
+  return SmsModule.triggerCleanNow();
+}
+
+export function onSmsReceived(callback: (sms: IncomingSms) => void): () => void {
+  const subscription = DeviceEventEmitter.addListener('onSmsReceived', callback);
+  return () => subscription.remove();
 }

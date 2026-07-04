@@ -1,5 +1,8 @@
 package com.mobile
 
+import android.app.role.RoleManager
+import android.os.Build
+import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -7,60 +10,38 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 class MainActivity : ReactActivity() {
 
-  /**
-   * Returns the name of the main component registered from JavaScript. This is used to schedule
-   * rendering of the component.
-   */
-  override fun getMainComponentName(): String = "mobile"
+    override fun getMainComponentName(): String = "mobile"
 
-  /**
-   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
-   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
-   */
-  override fun createReactActivityDelegate(): ReactActivityDelegate =
-      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+    override fun createReactActivityDelegate(): ReactActivityDelegate =
+        DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestDefaultSmsRole()
+        
+    }
+
+    private fun requestDefaultSmsRole() {
+        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        //     val roleManager = getSystemService(RoleManager::class.java)
+        //     if (!roleManager.isRoleHeld(RoleManager.ROLE_SMS)) {
+        //         val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+        //         startActivityForResult(intent, 1)
+        //     }
+        // }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = getSystemService(RoleManager::class.java)
+            android.util.Log.d("SmartSMS", "isRoleHeld: ${roleManager.isRoleHeld(RoleManager.ROLE_SMS)}")
+            if (!roleManager.isRoleHeld(RoleManager.ROLE_SMS)) {
+                android.util.Log.d("SmartSMS", "Requesting default SMS role...")
+                val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+                startActivityForResult(intent, 1)
+            }
+        } else {
+            android.util.Log.d("SmartSMS", "SDK < Q, skipping role request")
+        }
+
+        
+    }
 }
-
-// // gpt
-
-// package com.mobile
-// import android.os.Bundle
-// import com.facebook.react.ReactActivity
-// import com.facebook.react.ReactActivityDelegate
-// import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
-// import com.facebook.react.defaults.DefaultReactActivityDelegate
-
-// import android.content.Intent
-// import android.os.Build
-// import android.provider.Telephony
-
-
-// class MainActivity : ReactActivity() {
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//     super.onCreate(savedInstanceState)
-
-//     android.util.Log.d("SmartSMS", "MainActivity onCreate")
-
-//     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//         val currentDefault = Telephony.Sms.getDefaultSmsPackage(this)
-//         android.util.Log.d("SmartSMS", "Current default: $currentDefault")
-
-//         if (currentDefault != packageName) {
-//             android.util.Log.d("SmartSMS", "Launching default SMS dialog")
-
-//             val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
-//             intent.putExtra(
-//                 Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
-//                 packageName
-//             )
-//             startActivity(intent)
-//         }
-//     }
-//   }
-
-//     override fun getMainComponentName(): String = "mobile"
-
-//     override fun createReactActivityDelegate(): ReactActivityDelegate =
-//         DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
-// }

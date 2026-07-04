@@ -51,7 +51,7 @@ class SmsCleanWorker(
                 val ageMinutes = (System.currentTimeMillis() - date) / 60000
                 val isOtp = otpPatterns.any { pattern -> pattern.containsMatchIn(body) }
 
-                if (isOtp && ageMinutes > 30) {
+                if (isOtp && ageMinutes > 0) {
                     idsToDelete.add(id)
                 }
             }
