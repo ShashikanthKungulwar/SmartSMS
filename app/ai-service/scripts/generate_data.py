@@ -54,15 +54,26 @@ def gen_otp(n):
         "<#> {otp} is your {service} code. Valid {mins} min. hA8sk2Lqp3",
     ]
     rows = []
+    # for _ in range(n):
+    #     t = random.choice(templates)
+    #     rows.append((add_noise(t.format(
+    #         otp=random.randint(1000, 999999),
+    #         service=random.choice(SERVICES),
+    #         mins=random.choice([2, 5, 10, 15, 30]),
+    #         amt=random.randint(100, 50000),
+    #         bank=random.choice(BANKS),
+    #     )), "OTP"))
+    # return rows
     for _ in range(n):
-        t = random.choice(templates)
+        idx = random.randrange(len(templates))      # ← pick index instead
+        t = templates[idx]                           # ← get template by index
         rows.append((add_noise(t.format(
             otp=random.randint(1000, 999999),
             service=random.choice(SERVICES),
             mins=random.choice([2, 5, 10, 15, 30]),
             amt=random.randint(100, 50000),
             bank=random.choice(BANKS),
-        )), "OTP"))
+        )), "OTP", f"OTP_{idx}"))                    # ← add template_id
     return rows
 
 
@@ -84,8 +95,22 @@ def gen_bank(n):
         "Low balance alert: A/c XX{acc} balance is Rs.{bal}. Maintain min balance to avoid charges.",
     ]
     rows = []
+    # for _ in range(n):
+    #     idx = random.randrange(len(templates))      # ← pick index instead
+    #     rows.append((add_noise(t.format(
+    #         amt=random.randint(50, 99999),
+    #         acc=random.randint(1000, 9999),
+    #         date=fake.date_this_year().strftime("%d-%m-%y"),
+    #         name=fake.first_name(),
+    #         bal=random.randint(1000, 500000),
+    #         bank=random.choice(BANKS),
+    #         mindue=random.randint(500, 5000),
+    #         ref=random.randint(10**11, 10**12 - 1),
+    #     )), "Bank"))
+    # return rows
     for _ in range(n):
-        t = random.choice(templates)
+        idx = random.randrange(len(templates))
+        t = templates[idx]                           # ← you missed this line
         rows.append((add_noise(t.format(
             amt=random.randint(50, 99999),
             acc=random.randint(1000, 9999),
@@ -95,7 +120,7 @@ def gen_bank(n):
             bank=random.choice(BANKS),
             mindue=random.randint(500, 5000),
             ref=random.randint(10**11, 10**12 - 1),
-        )), "Bank"))
+        )), "Bank", f"Bank_{idx}"))                  # ← and this
     return rows
 
 
@@ -116,8 +141,23 @@ def gen_promo(n):
         "Your {merchant} membership expires soon. Renew now & save {disc}%: {url}",
     ]
     rows = []
+    # for _ in range(n):
+    #     t = random.choice(templates)
+    #     rows.append((add_noise(t.format(
+    #         disc=random.choice([10, 20, 30, 40, 50, 60, 70, 80]),
+    #         merchant=random.choice(MERCHANTS),
+    #         url="bit.ly/" + fake.lexify("??????"),
+    #         bank=random.choice(BANKS),
+    #         amt=random.randint(50, 2000),
+    #         code=random.randint(10, 99),
+    #         date=fake.date_this_month().strftime("%d %b"),
+    #         name=fake.first_name(),
+    #     )), "Promo"))
+    # return rows
+    rows = []
     for _ in range(n):
-        t = random.choice(templates)
+        idx = random.randrange(len(templates))
+        t = templates[idx]
         rows.append((add_noise(t.format(
             disc=random.choice([10, 20, 30, 40, 50, 60, 70, 80]),
             merchant=random.choice(MERCHANTS),
@@ -127,7 +167,7 @@ def gen_promo(n):
             code=random.randint(10, 99),
             date=fake.date_this_month().strftime("%d %b"),
             name=fake.first_name(),
-        )), "Promo"))
+        )), "Promo", f"Promo_{idx}"))
     return rows
 
 
@@ -148,8 +188,24 @@ def gen_delivery(n):
         "OTP for delivery of order {oid} is {otp}. Share only with the delivery agent. -{courier}",
     ]
     rows = []
+    # for _ in range(n):
+    #     t = random.choice(templates)
+    #     rows.append((add_noise(t.format(
+    #         merchant=random.choice(MERCHANTS),
+    #         oid="OD" + str(random.randint(10**9, 10**10 - 1)),
+    #         courier=random.choice(COURIERS),
+    #         url="bit.ly/" + fake.lexify("??????"),
+    #         time=random.choice(["12 PM", "3 PM", "6 PM", "9 PM"]),
+    #         date=fake.date_this_month().strftime("%d %b"),
+    #         amt=random.randint(200, 5000),
+    #         name=fake.first_name(),
+    #         phone=fake.phone_number(),
+    #         otp=random.randint(1000, 9999),
+    #     )), "Delivery"))
+    # return rows
     for _ in range(n):
-        t = random.choice(templates)
+        idx = random.randrange(len(templates))
+        t = templates[idx]
         rows.append((add_noise(t.format(
             merchant=random.choice(MERCHANTS),
             oid="OD" + str(random.randint(10**9, 10**10 - 1)),
@@ -161,7 +217,7 @@ def gen_delivery(n):
             name=fake.first_name(),
             phone=fake.phone_number(),
             otp=random.randint(1000, 9999),
-        )), "Delivery"))
+        )), "Delivery", f"Delivery_{idx}"))
     return rows
 
 
@@ -194,7 +250,8 @@ def gen_hard_cases(n):
     ]
     rows = []
     for _ in range(n):
-        t, label = random.choice(templates)
+        idx = random.randrange(len(templates))
+        t, label = templates[idx]
         rows.append((add_noise(t.format(
             code4=random.randint(1000, 9999),
             code6=random.randint(100000, 999999),
@@ -210,7 +267,7 @@ def gen_hard_cases(n):
             courier=random.choice(COURIERS),
             url="bit.ly/" + fake.lexify("??????"),
             date=fake.date_this_month().strftime("%d %b"),
-        )), label))
+        )), label, f"Hard_{idx}"))
     return rows
 
 
@@ -226,9 +283,9 @@ if __name__ == "__main__":
 
     with open("data/processed/synthetic_sms.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["text", "label"])
+        writer.writerow(["text", "label","template_id"])
         writer.writerows(data)
 
     print(f"Generated {len(data)} synthetic SMS")
     from collections import Counter
-    print(Counter(label for _, label in data))
+    print(Counter(label for _, label,_ in data))
