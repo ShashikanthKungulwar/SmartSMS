@@ -1,9 +1,9 @@
 {
-  "run_name": "full_weighted",
+  "run_name": "full_plain_CE",
   "config": {
-    "run_name": "full_weighted",
+    "run_name": "full_plain_CE",
     "data_variant": "full",
-    "use_class_weights": true,
+    "use_class_weights": false,
     "model_name": "distilbert-base-uncased",
     "max_length": 64,
     "lr": 2e-05,
@@ -16,8 +16,8 @@
     "holdout_frac": 0.15,
     "holdout_templates": null
   },
-  "test_macro_f1": 0.995798277885725,
-  "test_accuracy": 0.9967087218869994,
+  "test_macro_f1": 0.9930359384808537,
+  "test_accuracy": 0.9945145364783324,
   "per_class": {
     "OTP": {
       "precision": 1.0,
@@ -44,21 +44,21 @@
       "support": 197.0
     },
     "Spam": {
-      "precision": 0.9929078014184397,
-      "recall": 0.9655172413793104,
-      "f1-score": 0.9790209790209791,
+      "precision": 0.972027972027972,
+      "recall": 0.9586206896551724,
+      "f1-score": 0.9652777777777778,
       "support": 145.0
     },
     "Personal": {
-      "precision": 0.9929676511954993,
-      "recall": 0.9985855728429985,
-      "f1-score": 0.995768688293371,
+      "precision": 0.9915373765867419,
+      "recall": 0.9943422913719944,
+      "f1-score": 0.9929378531073446,
       "support": 707.0
     }
   },
   "hard_negative_acc": 1.0,
-  "holdout_acc": 0.9090262970859986,
-  "holdout_macro_f1": 0.9020783651532506,
+  "holdout_acc": 0.9168443496801706,
+  "holdout_macro_f1": 0.882246452153079,
   "holdout_otp_recall": 1.0,
-  "gap": 0.09371991273247438
+  "gap": 0.11078948632777474
 }

@@ -1,7 +1,7 @@
 {
-  "run_name": "full_weighted",
+  "run_name": "full_weighted_v3",
   "config": {
-    "run_name": "full_weighted",
+    "run_name": "full_weighted_v3",
     "data_variant": "full",
     "use_class_weights": true,
     "model_name": "distilbert-base-uncased",
@@ -16,49 +16,49 @@
     "holdout_frac": 0.15,
     "holdout_templates": null
   },
-  "test_macro_f1": 0.995798277885725,
-  "test_accuracy": 0.9967087218869994,
+  "test_macro_f1": 0.9950553277038608,
+  "test_accuracy": 0.9964102564102564,
   "per_class": {
     "OTP": {
       "precision": 1.0,
       "recall": 1.0,
       "f1-score": 1.0,
-      "support": 284.0
+      "support": 281.0
     },
     "Bank": {
       "precision": 1.0,
       "recall": 1.0,
       "f1-score": 1.0,
-      "support": 279.0
+      "support": 311.0
     },
     "Promo": {
       "precision": 1.0,
       "recall": 1.0,
       "f1-score": 1.0,
-      "support": 211.0
+      "support": 317.0
     },
     "Delivery": {
       "precision": 1.0,
       "recall": 1.0,
       "f1-score": 1.0,
-      "support": 197.0
+      "support": 190.0
     },
     "Spam": {
-      "precision": 0.9929078014184397,
-      "recall": 0.9655172413793104,
-      "f1-score": 0.9790209790209791,
-      "support": 145.0
+      "precision": 0.9857142857142858,
+      "recall": 0.965034965034965,
+      "f1-score": 0.9752650176678446,
+      "support": 143.0
     },
     "Personal": {
       "precision": 0.9929676511954993,
-      "recall": 0.9985855728429985,
-      "f1-score": 0.995768688293371,
-      "support": 707.0
+      "recall": 0.9971751412429378,
+      "f1-score": 0.9950669485553206,
+      "support": 708.0
     }
   },
   "hard_negative_acc": 1.0,
-  "holdout_acc": 0.9090262970859986,
-  "holdout_macro_f1": 0.9020783651532506,
-  "holdout_otp_recall": 1.0,
-  "gap": 0.09371991273247438
+  "holdout_acc": 0.747624703087886,
+  "holdout_macro_f1": 0.7038929233853516,
+  "holdout_otp_recall": 0.6702819956616052,
+  "gap": 0.29116240431850926
 }

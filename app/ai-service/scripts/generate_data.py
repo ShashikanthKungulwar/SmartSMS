@@ -93,6 +93,13 @@ def gen_bank(n):
         "Cheque no. {ref} for Rs.{amt} has been cleared from A/c XX{acc}. -{bank}",
         "Interest of Rs.{amt} credited to your FD A/c XX{acc}. -{bank}",
         "Low balance alert: A/c XX{acc} balance is Rs.{bal}. Maintain min balance to avoid charges.",
+        # --- v2 additions: append only ---
+        "Your {bank} debit card XX{acc} has been blocked due to suspicious activity. Visit branch or call 1800-XXX to unblock.",
+        "KYC update pending for A/c XX{acc}. Please visit your nearest {bank} branch by {date} to avoid restrictions.",
+        "Auto-pay of Rs.{amt} to {name} is scheduled on {date} from A/c XX{acc}. Ensure sufficient balance.",
+        "Your FD of Rs.{amt} matures on {date}. Renew or withdraw via netbanking. -{bank}",
+        "Beware of fraud calls asking for card details. {bank} officials never ask for PIN or CVV.",
+        "Your account statement for {month} is available. Download from the {bank} app.",
     ]
     rows = []
     # for _ in range(n):
@@ -120,6 +127,17 @@ def gen_bank(n):
             bank=random.choice(BANKS),
             mindue=random.randint(500, 5000),
             ref=random.randint(10**11, 10**12 - 1),
+            telco=random.choice(["Airtel", "Jio", "Vi"]),
+            gb=random.choice([1, 1.5, 2, 3]),
+            foodapp=random.choice(["Swiggy", "Zomato"]),
+            travelapp=random.choice(["MakeMyTrip", "ixigo", "Goibibo"]),
+            city1=random.choice(["DEL", "BOM", "BLR", "HYD"]),
+            city2=random.choice(["CCU", "MAA", "PNQ", "LKO"]),
+            ott=random.choice(["Netflix", "Hotstar", "SonyLIV", "Prime Video"]),
+            points=random.randint(100, 5000),
+            wallet=random.choice(["Paytm", "PhonePe", "Amazon Pay"]),
+            amt2=random.randint(199, 999),
+            month=random.choice(["June", "July", "August"]),
         )), "Bank", f"Bank_{idx}"))                  # ← and this
     return rows
 
@@ -128,6 +146,8 @@ def gen_bank(n):
 # Promo — marketing / offers
 # ─────────────────────────────────────────────
 def gen_promo(n):
+    
+    
     templates = [
         "MEGA SALE! Get {disc}% OFF on all products at {merchant}. Shop now: {url} T&C apply.",
         "{merchant} Big Billion Days! Up to {disc}% off + extra 10% with {bank} cards. Hurry!",
@@ -139,6 +159,30 @@ def gen_promo(n):
         "Hi {name}, unlock Rs.{amt} off your first order at {merchant} with code NEW{code}.",
         "Last day! {merchant} clearance sale ends tonight. Up to {disc}% off sitewide.",
         "Your {merchant} membership expires soon. Renew now & save {disc}%: {url}",
+        # --- v2 additions: append only, do not reorder ---
+        # telecom
+        "Your {telco} pack expires tomorrow. Recharge with Rs.{amt} for {gb}GB/day + unlimited calls.",
+        "Data exhausted? Get {gb}GB extra with Rs.{amt} booster pack. Dial *121# or visit app.",
+        # food delivery
+        "Hungry? Get {disc}% off up to Rs.{amt} on your next 3 orders. Code: EAT{code}. -{foodapp}",
+        "{foodapp}: Free delivery all weekend! Order your favourites now.",
+        # credit card offers
+        "Pre-approved! Get a {bank} credit card with Rs.{bigamt} limit. Zero joining fee. Apply: {url}",
+        "Convert your {bank} card purchase of Rs.{amt} into easy EMIs at 0% interest. Reply YES.",
+        # travel
+        "Flight fares dropped! {city1}-{city2} from Rs.{amt}. Book on {travelapp} before midnight.",
+        "IRCTC: Special trains added for festive season. Book early & save up to {disc}%.",
+        # OTT / subscriptions
+        "Your {ott} plan renews on {date} at Rs.{amt}. Upgrade to 4K for Rs.{amt2}/month.",
+        "Missed our shows? Come back to {ott} at 50% off for 3 months. Resubscribe: {url}",
+        # loyalty / wallet — quiet, no urgency
+        "You have {points} reward points expiring on {date}. Redeem on {merchant}.",
+        "Rs.{amt} cashback credited to your {wallet} wallet. Use on your next order.",
+        # order/purchase vocabulary in promo context — the Delivery collision zone
+        "Loved your recent {merchant} order? Reorder in 1 tap and get {disc}% off today.",
+        "Items in your order history are back in stock at {merchant}. Prices start Rs.{amt}.",
+        # insurance / services, plain tone
+        "Your {bank} health insurance renewal is due {date}. Renew online, save {disc}% on premium."
     ]
     rows = []
     # for _ in range(n):
@@ -167,6 +211,18 @@ def gen_promo(n):
             code=random.randint(10, 99),
             date=fake.date_this_month().strftime("%d %b"),
             name=fake.first_name(),
+            telco=random.choice(["Airtel", "Jio", "Vi"]),
+            gb=random.choice([1, 1.5, 2, 3]),
+            foodapp=random.choice(["Swiggy", "Zomato"]),
+            travelapp=random.choice(["MakeMyTrip", "ixigo", "Goibibo"]),
+            city1=random.choice(["DEL", "BOM", "BLR", "HYD"]),
+            city2=random.choice(["CCU", "MAA", "PNQ", "LKO"]),
+            ott=random.choice(["Netflix", "Hotstar", "SonyLIV", "Prime Video"]),
+            points=random.randint(100, 5000),
+            wallet=random.choice(["Paytm", "PhonePe", "Amazon Pay"]),
+            amt2=random.randint(199, 999),
+            month=random.choice(["June", "July", "August"]),
+            bigamt=random.randint(50000, 500000),
         )), "Promo", f"Promo_{idx}"))
     return rows
 
@@ -270,18 +326,68 @@ def gen_hard_cases(n):
         )), label, f"Hard_{idx}"))
     return rows
 
+def gen_spam(n):
+    templates = [
+        "Your electricity will be disconnected tonight. Pay pending bill immediately: {url}",
+        "Loan of Rs.{bigamt} approved instantly! No documents needed. Get money in 5 mins: {url}",
+        "Dear winner! Your mobile no. won Rs.{bigamt} in {merchant} anniversary lucky draw. Claim: {url}",
+        "URGENT: Your parcel is held at customs. Pay Rs.{amt} clearance fee to release: {url}",
+        "Your {ott} account is suspended due to payment failure. Update card details: {url}",
+        "Hiring! Part time job, earn Rs.{amt}/day from mobile. No experience. WhatsApp {phone}",
+        "Get guaranteed returns! Double your money in 30 days. Invest min Rs.{amt}. Join: {url}",
+        "Famous astrologer solves love, money, job problems in 24hrs. Call {phone}",
+        "Hot singles in your city want to meet you tonight! Register free: {url}",
+        "Your PAN card will be deactivated. Link with Aadhaar today: {url}",
+        "Refund of Rs.{amt} pending from Income Tax Dept. Verify bank details to receive: {url}",
+        "You have been selected for FREE {merchant} gift voucher worth Rs.{amt}. Limited! {url}",
+    ]
+    rows = []
+    for _ in range(n):
+        idx = random.randrange(len(templates))
+        t = templates[idx]
+        rows.append((add_noise(t.format(
+            url="bit.ly/" + fake.lexify("??????"),
+            bigamt=random.randint(50000, 5000000),
+            amt=random.randint(199, 9999),
+            merchant=random.choice(MERCHANTS),
+            ott=random.choice(["Netflix", "Hotstar", "Prime Video"]),
+            phone=fake.phone_number(),
+        )), "Spam", f"Spam_{idx}"))
+    return rows
+
+def gen_personal(n):
+    templates = [
+        "bhai {amt} bhej de gpay pe, kal wapas kar dunga pakka",
+        "mom said dinner at {time}, dont be late again",
+        "exam postponed to {date}, prof mailed just now. tell others",
+        "reached station, train late by {mins} mins. pick me up at {time}?",
+        "happy birthday yaar!! party kab de raha hai :P",
+        "did u see the match?? {amt} rupees bet, u owe me lol",
+    ]
+    rows = []
+    for _ in range(n):
+        idx = random.randrange(len(templates))
+        t = templates[idx]
+        rows.append((add_noise(t.format(
+            amt=random.choice([100, 200, 500, 1000, 2000]),
+            time=random.choice(["8", "8:30", "9pm", "noon", "7 baje"]),
+            date=fake.date_this_month().strftime("%d %b"),
+            mins=random.choice([20, 30, 45]),
+        )), "Personal", f"Personal_{idx}"))
+    return rows
 
 if __name__ == "__main__":
     data = []
     data += gen_otp(2000)
-    data += gen_bank(2000)
-    data += gen_promo(1500)
+    data += gen_bank(2400)
+    data += gen_promo(2500)
     data += gen_delivery(1500)
     data += gen_hard_cases(1500)
-
+    # data += gen_spam(1200)       # 12 families × ~100
+    # data += gen_personal(600)    # 6 families × ~100
     random.shuffle(data)
 
-    with open("data/processed/synthetic_sms.csv", "w", newline="", encoding="utf-8") as f:
+    with open("data/processed/v3/synthetic_sms.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["text", "label","template_id"])
         writer.writerows(data)
