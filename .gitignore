@@ -178,3 +178,6 @@ yarn-error.log
 
 .claude/
 models/
+model_fp32.tflite
+tokenizer_config.json
+quntization.ipynb

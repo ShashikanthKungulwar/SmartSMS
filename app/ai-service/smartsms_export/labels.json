@@ -1,0 +1,18 @@
+{
+  "labels": [
+    "OTP",
+    "Bank",
+    "Promo",
+    "Delivery",
+    "Spam",
+    "Personal"
+  ],
+  "label2id": {
+    "OTP": 0,
+    "Bank": 1,
+    "Promo": 2,
+    "Delivery": 3,
+    "Spam": 4,
+    "Personal": 5
+  }
+}
