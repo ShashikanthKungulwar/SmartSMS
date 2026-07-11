@@ -15,6 +15,17 @@ export interface IncomingSms {
   body: string;
 }
 
+export interface Classification {
+  label: string;
+  confidence: number;
+  latencyMs: number;
+}
+
+export function classifySms(text: string): Promise<Classification> {
+  return SmsModule.classifySms(text);
+}
+
+
 export function getSmsFromInbox(maxCount = 20): Promise<Sms[]> {
   return SmsModule.getSmsFromInbox(maxCount);
 }

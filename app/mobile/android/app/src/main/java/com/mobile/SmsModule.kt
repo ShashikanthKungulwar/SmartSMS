@@ -8,6 +8,8 @@ import com.facebook.react.bridge.*
 class SmsModule(private val reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext) {
 
+    private val classifier by lazy { SmsClassifier(reactContext) }
+    
     override fun getName() = "SmsModule"
 
     @ReactMethod
@@ -60,6 +62,21 @@ class SmsModule(private val reactContext: ReactApplicationContext) :
             else promise.reject("DELETE_FAILED", "SMS not found or already deleted")
         } catch (e: Exception) {
             promise.reject("DELETE_ERROR", e.message)
+        }
+    }
+
+    @ReactMethod
+    fun classifySms(text: String, promise: Promise) {
+        try {
+            val result = classifier.classify(text)
+            val map = WritableNativeMap().apply {
+                putString("label", result.label)
+                putDouble("confidence", result.confidence.toDouble())
+                putDouble("latencyMs", result.latencyMs.toDouble())
+            }
+            promise.resolve(map)
+        } catch (e: Exception) {
+            promise.reject("CLASSIFY_ERROR", e.message)
         }
     }
 }

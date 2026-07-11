@@ -3,6 +3,8 @@ import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import { AuthApi } from './src/api/auth';
 import { triggerCleanNow, onSmsReceived } from './src/native/SmsNative';
+import { classifySms } from './src/native/SmsNative';
+
 // import { AuthApi } from './src/api/auth';
 
 // inside your home screen component
@@ -101,6 +103,36 @@ export default function App() {
     >
       <Text style={styles.logout}>Logout</Text>
     </TouchableOpacity>
+
+    
+    <TouchableOpacity
+      onPress={async () => {
+        const samples = [
+          "Your OTP is 4521. Valid for 10 minutes.",
+          "Rs.5000 debited from A/c XX1234. Bal: Rs.20000",
+          "MEGA SALE! 50% off at Amazon today",
+        ];
+        // warmup
+        await classifySms(samples[0]);
+        // measure
+        const times: number[] = [];
+        for (let i = 0; i < 20; i++) {
+          for (const s of samples) {
+            const r = await classifySms(s);
+            times.push(r.latencyMs);
+          }
+        }
+        times.sort((a, b) => a - b);
+        const p50 = times[Math.floor(times.length * 0.5)];
+        const p95 = times[Math.floor(times.length * 0.95)];
+        console.log(`On-device latency — p50: ${p50}ms, p95: ${p95}ms`);
+      }}
+      style={{ padding: 10, backgroundColor: '#185FA5', borderRadius: 8, margin: 8 }}
+>
+      <Text style={{ color: '#fff', textAlign: 'center' }}>Benchmark Model</Text>
+    </TouchableOpacity>
+
+
     <TouchableOpacity
     onPress={async () => {
       await triggerCleanNow();
