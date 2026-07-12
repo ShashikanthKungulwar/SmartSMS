@@ -1,0 +1,15 @@
+notebooks/
+data/
+results/
+*.ipynb
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+venv/
+models_experiments/
+experements/
+node_modules/
+scripts/
+smartsms_export/
+sms+spam+collections/
+src/

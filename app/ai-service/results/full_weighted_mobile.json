@@ -1,0 +1,64 @@
+{
+  "run_name": "full_weighted_mobile",
+  "config": {
+    "run_name": "full_weighted_mobile",
+    "data_variant": "full",
+    "use_class_weights": true,
+    "model_name": "google/mobilebert-uncased",
+    "max_length": 64,
+    "lr": 2e-05,
+    "epochs": 5,
+    "batch_size": 32,
+    "warmup_ratio": 0.1,
+    "weight_decay": 0.01,
+    "early_stop_patience": 2,
+    "seed": 42,
+    "holdout_frac": 0.15,
+    "holdout_templates": null
+  },
+  "test_macro_f1": 0.9891819883719172,
+  "test_accuracy": 0.9928205128205129,
+  "per_class": {
+    "OTP": {
+      "precision": 0.9929328621908127,
+      "recall": 1.0,
+      "f1-score": 0.9964539007092199,
+      "support": 281.0
+    },
+    "Bank": {
+      "precision": 0.9967948717948718,
+      "recall": 1.0,
+      "f1-score": 0.9983948635634029,
+      "support": 311.0
+    },
+    "Promo": {
+      "precision": 0.9968553459119497,
+      "recall": 1.0,
+      "f1-score": 0.9984251968503937,
+      "support": 317.0
+    },
+    "Delivery": {
+      "precision": 0.9895833333333334,
+      "recall": 1.0,
+      "f1-score": 0.9947643979057592,
+      "support": 190.0
+    },
+    "Spam": {
+      "precision": 0.9779411764705882,
+      "recall": 0.9300699300699301,
+      "f1-score": 0.953405017921147,
+      "support": 143.0
+    },
+    "Personal": {
+      "precision": 0.9929478138222849,
+      "recall": 0.9943502824858758,
+      "f1-score": 0.9936485532815809,
+      "support": 708.0
+    }
+  },
+  "hard_negative_acc": 1.0,
+  "holdout_acc": 0.7868171021377672,
+  "holdout_macro_f1": 0.8118045906125682,
+  "holdout_otp_recall": 0.6702819956616052,
+  "gap": 0.17737739775934902
+}

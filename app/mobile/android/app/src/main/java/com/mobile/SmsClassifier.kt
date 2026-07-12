@@ -15,7 +15,10 @@ class SmsClassifier(context: Context) {
     private val maxLen = 64
 
     // MUST match model.config.id2label order from training
-    private val labels = listOf("Bank", "Delivery", "OTP", "Personal", "Promo", "Spam")
+    // private val labels = listOf("Bank", "Delivery", "OTP", "Personal", "Promo", "Spam")
+    private val labels = listOf("OTP", "Bank", "Promo", "Delivery", "Spam", "Personal")
+
+    // private val labels = listOf("OTP", "Bank", "Promo", "Delivery", "Spam", "Personal")
 
     init {
         val model = loadModelFile(context, "sms_classifier_fp32.tflite")
