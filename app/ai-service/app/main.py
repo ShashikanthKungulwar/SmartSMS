@@ -37,3 +37,4 @@ def retrain(background_tasks: BackgroundTasks):
     # Run in background — retraining is slow, don't block the request
     background_tasks.add_task(run_retrain)
     return {"status": "retrain started"}
+

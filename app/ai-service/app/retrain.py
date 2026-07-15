@@ -42,6 +42,8 @@ def run_retrain():
 
         model.save_pretrained(out_dir)
         tokenizer.save_pretrained(out_dir)
+        requests.post(f"{BACKEND_URL}/api/feedback/mark-used")
+        print("[retrain] marked feedback as used", flush=True)
         return {"status": "done", "model": out_dir, "samples": len(items)}
     except Exception as e:
         print(f"[retrain] ERROR: {e}", flush=True)

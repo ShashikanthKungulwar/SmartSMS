@@ -18,7 +18,13 @@ router.get('/pending', async (req, res, next) => {
     res.json({ count: items.length, items });
   } catch (e) { next(e); }
 });
-
+// feedback.js — public (above authMiddleware), like /pending
+router.post('/mark-used', async (req, res, next) => {
+  try {
+    await Feedback.updateMany({ used: false }, { used: true });
+    res.json({ message: 'marked used' });
+  } catch (e) { next(e); }
+});
 router.use(authMiddleware);
 
 router.post('/', async (req, res, next) => {
