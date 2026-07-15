@@ -1,5 +1,5 @@
 import { NativeModules, DeviceEventEmitter } from 'react-native';
-
+import { apiClient } from '../api/client';
 const { SmsModule } = NativeModules;
 
 export interface Sms {
@@ -41,4 +41,9 @@ export function triggerCleanNow(): Promise<boolean> {
 export function onSmsReceived(callback: (sms: IncomingSms) => void): () => void {
   const subscription = DeviceEventEmitter.addListener('onSmsReceived', callback);
   return () => subscription.remove();
+}
+
+
+export async function submitFeedback(text: string, predicted: string, correct: string) {
+  await apiClient.post('/feedback', { text, predicted, correct });
 }

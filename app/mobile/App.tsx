@@ -3,7 +3,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import { AuthApi } from './src/api/auth';
 import { triggerCleanNow, onSmsReceived } from './src/native/SmsNative';
-import { classifySms } from './src/native/SmsNative';
+import { classifySms,submitFeedback } from './src/native/SmsNative';
 
 // import { AuthApi } from './src/api/auth';
 
@@ -16,6 +16,8 @@ import {
 import { requestSmsPermissions } from './src/permissions/SmsPermission';
 import { useSms } from './src/hooks/useSms';
 
+
+const LABELS = ['OTP', 'Bank', 'Promo', 'Delivery', 'Spam', 'Personal'];
 
 type Screen = 'login' | 'register' | 'home';
 
@@ -168,7 +170,17 @@ export default function App() {
           </TouchableOpacity>
         </View>
         <Text style={styles.body}>{item.body}</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
+        {LABELS.map(l => (
+          <TouchableOpacity key={l}
+            onPress={() => submitFeedback(item.body,'unknown', l)}
+            style={{ paddingHorizontal: 6, paddingVertical: 2, backgroundColor: '#eee', borderRadius: 4 }}>
+            <Text style={{ fontSize: 10 }}>{l}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
+      </View>
+      
     )}
     />
   </View>

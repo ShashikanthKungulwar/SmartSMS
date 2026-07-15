@@ -6,7 +6,6 @@ import cors from "cors";
 
 
 import dBconnection from "./config/db.js";
-import cors from "cors"
 import express, { Router } from "express"
 import authMiddleWare from "./middleware/auth.js";
 import User from "./models/Users.js";
@@ -15,7 +14,7 @@ import ruleRouter from "./routes/rules.js"
 import smsRouter from './routes/sms.js';
 import deviceRouter from './routes/devices.js'
 import errorhandler from "./middleware/errors.js";
-
+import feedbackRouter from './routes/feedback.js'
 // await dBconnection();
 const app = express();
 app.use(cors());
@@ -25,6 +24,8 @@ app.use('/api/auth',authRouter)
 app.use('/api/rules',ruleRouter)
 app.use('/api/sms', smsRouter);
 app.use('/api/device',deviceRouter);
+app.use('/api/feedback', feedbackRouter);
+
 
 
 app.get('/api/me',authMiddleWare,async(req,res)=>{
@@ -32,7 +33,6 @@ app.get('/api/me',authMiddleWare,async(req,res)=>{
     const user = await User.findById(req.user.id).select('-password -refreshToken');
     res.json(user);
 })
-
 
 
 app.use(errorhandler);
