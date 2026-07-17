@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.mobile.SmsClassifier
 
 class SmsCleanWorker(
     context: Context,
@@ -22,14 +23,11 @@ class SmsCleanWorker(
         }
     }
 
+    // Uses the on-device DistilBERT classifier's prediction, not a digit regex —
+    // a bare 4-8 digit run also matches account numbers, order IDs, and amounts,
+    // which previously caused Bank/Delivery messages to be deleted alongside real OTPs.
     private fun cleanOtpSms(): Int {
-        val otpPatterns = listOf(
-            Regex("\\b\\d{4,8}\\b"),           // 4-8 digit OTP
-            Regex("otp", RegexOption.IGNORE_CASE),
-            Regex("one.?time", RegexOption.IGNORE_CASE),
-            Regex("verification code", RegexOption.IGNORE_CASE),
-            Regex("passcode", RegexOption.IGNORE_CASE),
-        )
+        val classifier = SmsClassifier(applicationContext)
 
         val cursor = applicationContext.contentResolver.query(
             Uri.parse("content://sms/inbox"),
@@ -49,7 +47,7 @@ class SmsCleanWorker(
 
                 // Only delete OTPs older than 30 minutes
                 val ageMinutes = (System.currentTimeMillis() - date) / 60000
-                val isOtp = otpPatterns.any { pattern -> pattern.containsMatchIn(body) }
+                val isOtp = classifier.classify(body).label == "OTP"
 
                 if (isOtp && ageMinutes > 0) {
                     idsToDelete.add(id)

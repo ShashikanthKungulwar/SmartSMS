@@ -8,6 +8,7 @@ export interface Sms {
   body: string;
   date: string;
   read: number;
+  predictedLabel?: string;
 }
 
 export interface IncomingSms {

@@ -21,6 +21,7 @@ export const SmsRepository = {
     await deleteSms(smsId);
     const updated = SmsStorage.getAll().filter(s => s.id !== smsId);
     SmsStorage.save(updated);
+    SmsStorage.removeLabel(smsId);
   },
  
 

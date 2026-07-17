@@ -15,6 +15,7 @@ import smsRouter from './routes/sms.js';
 import deviceRouter from './routes/devices.js'
 import errorhandler from "./middleware/errors.js";
 import feedbackRouter from './routes/feedback.js'
+import analyticsRouter from './routes/analytics.js'
 // await dBconnection();
 const app = express();
 app.use(cors());
@@ -25,6 +26,7 @@ app.use('/api/rules',ruleRouter)
 app.use('/api/sms', smsRouter);
 app.use('/api/device',deviceRouter);
 app.use('/api/feedback', feedbackRouter);
+app.use('/api/analytics', analyticsRouter);
 
 
 
