@@ -27,9 +27,9 @@ class SmsClassifier(context: Context) {
             setUseXNNPACK(true)     // XNNPACK delegate — the latency win
         }
         interpreter = Interpreter(model, options)
-        for (i in 0 until interpreter.inputTensorCount) {
-            android.util.Log.d("SmartSMS", "Input $i: ${interpreter.getInputTensor(i).name()}")
-        }
+        // for (i in 0 until interpreter.inputTensorCount) {
+        //     android.util.Log.d("SmartSMS", "Input $i: ${interpreter.getInputTensor(i).name()}")
+        // }
     }
 
     private fun loadModelFile(context: Context, filename: String): MappedByteBuffer {

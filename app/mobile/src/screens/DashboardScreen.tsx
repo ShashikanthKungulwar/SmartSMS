@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { Appbar, Card, Text, ActivityIndicator, ProgressBar, Divider, Icon, useTheme } from 'react-native-paper';
 import { getAnalytics, AnalyticsSummary } from '../api/analytics';
+import { CATEGORY_COLORS, CATEGORY_ICONS, spacing } from '../theme/theme';
 
-const BAR_COLOR = '#1D9E75';
-
-export default function DashboardScreen({ onBack }: { onBack: () => void }) {
+export default function DashboardScreen({ focused = true }: { focused?: boolean } = {}) {
+  const theme = useTheme();
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,49 +19,84 @@ export default function DashboardScreen({ onBack }: { onBack: () => void }) {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  // BottomNavigation keeps this screen mounted across tab switches, so a plain
+  // mount-only effect would only ever fetch once. Refetch every time the tab
+  // becomes focused so stats (e.g. after deleting a message) don't go stale.
+  useEffect(() => { if (focused) load(); }, [focused, load]);
 
   const maxCount = summary ? Math.max(1, ...Object.values(summary.byCategory)) : 1;
+  const categories = Object.entries(summary?.byCategory ?? {});
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={{ backgroundColor: "red", padding: 10 }} onPress={() => { console.log('Back pressed');   onBack(); }}><Text style={styles.back}>{'< Back'}</Text></TouchableOpacity>
-        <Text style={styles.title}>Analytics</Text>
-        <View style={{ width: 50 }} />
-      </View>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Appbar.Header elevated>
+        <Appbar.Content title="Dashboard" />
+      </Appbar.Header>
 
       {loading && !summary ? (
-        <ActivityIndicator style={{ marginTop: 40 }} />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" />
+        </View>
       ) : (
-        <ScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
+        >
           <View style={styles.statsRow}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{summary?.totalCleaned ?? 0}</Text>
-              <Text style={styles.statLabel}>Messages cleaned</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{summary?.timeSavedMinutes ?? 0}m</Text>
-              <Text style={styles.statLabel}>Time saved</Text>
-            </View>
+            <Card style={styles.statCard} mode="elevated">
+              <Card.Content style={styles.statContent}>
+                <Icon source="check-decagram-outline" size={22} color="#1D9E75" />
+                <Text variant="headlineSmall" style={styles.statValue}>{summary?.totalCleaned ?? 0}</Text>
+                <Text variant="bodySmall" style={styles.statLabel}>Cleaned</Text>
+              </Card.Content>
+            </Card>
+            <Card style={styles.statCard} mode="elevated">
+              <Card.Content style={styles.statContent}>
+                <Icon source="clock-outline" size={22} color="#185FA5" />
+                <Text variant="headlineSmall" style={styles.statValue}>{summary?.timeSavedMinutes ?? 0}m</Text>
+                <Text variant="bodySmall" style={styles.statLabel}>Time saved</Text>
+              </Card.Content>
+            </Card>
+            <Card style={styles.statCard} mode="elevated">
+              <Card.Content style={styles.statContent}>
+                <Icon source="shape-outline" size={22} color="#7F77DD" />
+                <Text variant="headlineSmall" style={styles.statValue}>{categories.length}</Text>
+                <Text variant="bodySmall" style={styles.statLabel}>Categories</Text>
+              </Card.Content>
+            </Card>
           </View>
-          <Text style={styles.cacheNote}>
-            {summary?.cached ? 'served from cache' : 'freshly computed'}
+
+          <Text variant="labelSmall" style={styles.cacheNote}>
+            {summary?.cached ? 'Served from cache' : 'Freshly computed'}
           </Text>
 
-          <Text style={styles.sectionTitle}>By category</Text>
-          {Object.entries(summary?.byCategory ?? {}).map(([category, count]) => (
-            <View key={category} style={styles.barRow}>
-              <Text style={styles.barLabel}>{category}</Text>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, { width: `${(count / maxCount) * 100}%` }]} />
-              </View>
-              <Text style={styles.barCount}>{count}</Text>
-            </View>
-          ))}
-          {summary && Object.keys(summary.byCategory).length === 0 && (
-            <Text style={styles.empty}>No cleanup activity yet</Text>
-          )}
+          <Divider style={styles.divider} />
+          <Text variant="titleMedium" style={styles.sectionTitle}>By category</Text>
+
+          <Card mode="elevated" style={styles.breakdownCard}>
+            <Card.Content>
+              {categories.map(([category, count]) => {
+                const color = CATEGORY_COLORS[category] || CATEGORY_COLORS.unknown;
+                return (
+                  <View key={category} style={styles.barRow}>
+                    <View style={styles.barLabelRow}>
+                      <Icon source={CATEGORY_ICONS[category] || CATEGORY_ICONS.unknown} size={16} color={color} />
+                      <Text variant="bodyMedium" style={styles.barLabel}>{category}</Text>
+                      <Text variant="bodyMedium" style={styles.barCount}>{count}</Text>
+                    </View>
+                    <ProgressBar
+                      progress={count / maxCount}
+                      color={color}
+                      style={styles.progressBar}
+                    />
+                  </View>
+                );
+              })}
+              {categories.length === 0 && (
+                <Text style={styles.empty}>No cleanup activity yet</Text>
+              )}
+            </Card.Content>
+          </Card>
         </ScrollView>
       )}
     </View>
@@ -68,20 +104,22 @@ export default function DashboardScreen({ onBack }: { onBack: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  container:    { flex: 1, padding: 16, backgroundColor: '#fff' },
-  header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  back:         { color: '#1D9E75', fontSize: 14 },
-  title:        { fontSize: 18, fontWeight: '600' },
-  statsRow:     { flexDirection: 'row', gap: 12, marginBottom: 8 },
-  statCard:     { flex: 1, backgroundColor: '#f4f4f4', borderRadius: 8, padding: 16, alignItems: 'center' },
-  statValue:    { fontSize: 24, fontWeight: '700', color: '#1D9E75' },
-  statLabel:    { fontSize: 12, color: '#666', marginTop: 4 },
-  cacheNote:    { fontSize: 11, color: '#999', textAlign: 'center', marginBottom: 20 },
-  sectionTitle: { fontSize: 14, fontWeight: '600', marginBottom: 12 },
-  barRow:       { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  barLabel:     { width: 70, fontSize: 12, color: '#333' },
-  barTrack:     { flex: 1, height: 12, backgroundColor: '#eee', borderRadius: 6, overflow: 'hidden', marginHorizontal: 8 },
-  barFill:      { height: '100%', backgroundColor: BAR_COLOR, borderRadius: 6 },
-  barCount:     { width: 28, fontSize: 12, textAlign: 'right', color: '#333' },
-  empty:        { textAlign: 'center', color: '#999', marginTop: 20 },
+  container:      { flex: 1 },
+  centered:       { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  scrollContent:  { padding: spacing.md, paddingBottom: spacing.xxl },
+  statsRow:       { flexDirection: 'row', gap: spacing.sm },
+  statCard:       { flex: 1 },
+  statContent:    { alignItems: 'center', paddingVertical: spacing.sm },
+  statValue:      { fontWeight: '700', marginTop: spacing.xs },
+  statLabel:      { opacity: 0.6, marginTop: 2 },
+  cacheNote:      { textAlign: 'center', opacity: 0.5, marginTop: spacing.sm },
+  divider:        { marginTop: spacing.lg, marginBottom: spacing.md },
+  sectionTitle:   { fontWeight: '600', marginBottom: spacing.sm },
+  breakdownCard:  { marginBottom: spacing.md },
+  barRow:         { marginBottom: spacing.md },
+  barLabelRow:    { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xs, gap: spacing.xs },
+  barLabel:       { flex: 1 },
+  barCount:       { opacity: 0.6 },
+  progressBar:    { height: 8, borderRadius: 4 },
+  empty:          { textAlign: 'center', opacity: 0.5, marginTop: spacing.md },
 });
