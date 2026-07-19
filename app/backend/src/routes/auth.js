@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/Users.js";
 import {OAuth2Client} from 'google-auth-library';
 import validator from "validator"
+import { authLimiter } from "../middleware/rateLimiters.js";
 
 console.log("Auth router loaded");
 // console.log(process.env.GOOGLE_CLIENT_ID);
@@ -26,7 +27,7 @@ const makeTokens =  (userId) =>({
 });
 
 
-router.post('/register',async (req,res)=>{
+router.post('/register',authLimiter,async (req,res)=>{
     
     try{
         const{email,password,name} = req.body;
@@ -66,7 +67,7 @@ router.post('/register',async (req,res)=>{
 })
 
 
-router.post("/login",async (req,res)=>{
+router.post("/login",authLimiter,async (req,res)=>{
     try{
         const {email,password} = req.body
         if(!email || !password){
@@ -91,7 +92,7 @@ router.post("/login",async (req,res)=>{
 })
 
 //need to check this route after creating frontend
-router.post("/google",async (req,res)=>{
+router.post("/google",authLimiter,async (req,res)=>{
     try{        
         const {idToken} = req.body;
         if(!idToken) return res.status(400).json({error:"Token id is required"});
@@ -135,7 +136,7 @@ router.post("/google",async (req,res)=>{
     }
 })
 
-router.post("/refresh",async (req,res)=>{
+router.post("/refresh",authLimiter,async (req,res)=>{
     try{
         const {refreshToken} = req.body;
         if(!refreshToken){

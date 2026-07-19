@@ -177,7 +177,7 @@ yarn-error.log
 !.yarn/versions
 
 .claude/
-models/
+app/ai-service/models/
 model_fp32.tflite
 tokenizer_config.json
 quntization.ipynb

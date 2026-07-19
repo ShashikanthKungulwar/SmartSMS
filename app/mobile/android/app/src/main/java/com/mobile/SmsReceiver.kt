@@ -18,7 +18,7 @@ class SmsReceiver : BroadcastReceiver() {
         messages.forEach { sms ->
             val sender = sms.originatingAddress ?: "Unknown"
             val body   = sms.messageBody ?: ""
-            Log.d("SmartSMS", "SMS from: $sender → $body")
+            if (BuildConfig.DEBUG) Log.d("SmartSMS", "SMS from: $sender → $body")
 
             // As default SMS app, WE must write the SMS to the inbox
             if (isDeliver) {
@@ -31,7 +31,7 @@ class SmsReceiver : BroadcastReceiver() {
                 context.contentResolver.insert(
                     android.net.Uri.parse("content://sms/inbox"), values
                 )
-                Log.d("SmartSMS", "SMS written to inbox")
+                if (BuildConfig.DEBUG) Log.d("SmartSMS", "SMS written to inbox")
             }
 
             emitSmsReceivedEvent(context, sender, body)

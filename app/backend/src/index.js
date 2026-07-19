@@ -3,6 +3,7 @@ dotenv.config(
     {path: "../../.env"}
 )
 import cors from "cors";
+import helmet from "helmet";
 
 
 import dBconnection from "./config/db.js";
@@ -16,19 +17,41 @@ import deviceRouter from './routes/devices.js'
 import errorhandler from "./middleware/errors.js";
 import feedbackRouter from './routes/feedback.js'
 import analyticsRouter from './routes/analytics.js'
+import mongoSanitizeMiddleware from "./middleware/mongoSanitize.js";
+import { generalLimiter } from "./middleware/rateLimiters.js";
+
+// Warn (don't crash) on weak JWT secrets in production — a short secret is
+// brute-forceable and defeats the point of signing tokens.
+if (process.env.NODE_ENV === 'production') {
+    if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+        console.warn('[SECURITY WARNING] JWT_SECRET is missing or under 32 characters');
+    }
+    if (!process.env.JWT_REFRESH_SECRET || process.env.JWT_REFRESH_SECRET.length < 32) {
+        console.warn('[SECURITY WARNING] JWT_REFRESH_SECRET is missing or under 32 characters');
+    }
+}
+
 // await dBconnection();
 const app = express();
-app.use(cors());
+app.use(helmet());
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+    credentials: true
+}));
 app.use(express.json())
+app.use(mongoSanitizeMiddleware);
 
 app.use('/api/auth',authRouter)
+
+// generalLimiter applies to everything mounted after this point — auth routes
+// above already have their own stricter authLimiter, so they're excluded.
+app.use(generalLimiter);
+
 app.use('/api/rules',ruleRouter)
 app.use('/api/sms', smsRouter);
 app.use('/api/device',deviceRouter);
 app.use('/api/feedback', feedbackRouter);
 app.use('/api/analytics', analyticsRouter);
-
-
 
 app.get('/api/me',authMiddleWare,async(req,res)=>{
     // console.log("check");

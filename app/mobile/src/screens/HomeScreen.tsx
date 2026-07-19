@@ -78,7 +78,7 @@ function SmsCard({ item, menuOpen, onOpenMenu, onCloseMenu, onDelete }: {
               }}
             />
             <Divider />
-            <Menu.Item title="Correct label" disabled />
+            <Menu.Item title="Correct label"  />
             {LABELS.map(l => (
               <Menu.Item
                 key={l}
@@ -86,6 +86,7 @@ function SmsCard({ item, menuOpen, onOpenMenu, onCloseMenu, onDelete }: {
                 leadingIcon={label === l ? 'check' : undefined}
                 onPress={() => {
                   onCloseMenu();
+                  
                   submitFeedback(item.body, label || 'unknown', l);
                 }}
               />

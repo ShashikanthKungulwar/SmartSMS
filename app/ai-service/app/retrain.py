@@ -6,13 +6,12 @@ from datasets import Dataset
 
 MODEL_DIR = "models/distilbert_v1"
 BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:3000")
+INTERNAL_HEADERS = {"X-Internal-Token": os.getenv("INTERNAL_SERVICE_TOKEN", "")}
 
 def run_retrain():
     # 1. Pull feedback from backend
-    # (needs a service token in prod; simplified here)
-    
     try:
-        resp = requests.get(f"{BACKEND_URL}/api/feedback/pending")
+        resp = requests.get(f"{BACKEND_URL}/api/feedback/pending", headers=INTERNAL_HEADERS)
         print(f"[retrain] Fetched feedback: {resp.status_code}", flush=True)
         items = resp.json().get("items", [])
         print(f"[retrain] {len(items)} feedback items", flush=True)
@@ -42,7 +41,7 @@ def run_retrain():
 
         model.save_pretrained(out_dir)
         tokenizer.save_pretrained(out_dir)
-        requests.post(f"{BACKEND_URL}/api/feedback/mark-used")
+        requests.post(f"{BACKEND_URL}/api/feedback/mark-used", headers=INTERNAL_HEADERS)
         print("[retrain] marked feedback as used", flush=True)
         return {"status": "done", "model": out_dir, "samples": len(items)}
     except Exception as e:

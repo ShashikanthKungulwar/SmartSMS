@@ -57,10 +57,10 @@ class SmsClassifier(context: Context) {
         val start = System.nanoTime()
         interpreter.runForMultipleInputsOutputs(inputs, outputs)
         val latencyMs = (System.nanoTime() - start) / 1_000_000
-        android.util.Log.d("SmartSMS", "Inference: ${latencyMs}ms")
+        if (BuildConfig.DEBUG) android.util.Log.d("SmartSMS", "Inference: ${latencyMs}ms")
         val probs = softmax(output[0])
         val maxIdx = probs.indices.maxByOrNull { probs[it] }!!
-        android.util.Log.d("SmartSMS", "IDs: ${inputIds.take(12).joinToString(",")}")
+        if (BuildConfig.DEBUG) android.util.Log.d("SmartSMS", "IDs: ${inputIds.take(12).joinToString(",")}")
         return Result(labels[maxIdx], probs[maxIdx], latencyMs)
     }
 

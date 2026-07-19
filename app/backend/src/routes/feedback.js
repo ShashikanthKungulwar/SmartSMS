@@ -11,15 +11,26 @@ const RETRAIN_THRESHOLD = 500;
 // const RETRAIN_THRESHOLD = 2;
 
 const LABELS = ['OTP', 'Bank', 'Promo', 'Delivery', 'Spam', 'Personal'];
+
+// These two routes are public (above authMiddleware) because ai-service calls them
+// without a user session — gate them with a shared secret instead so feedback text
+// isn't readable by anyone who can reach the backend.
+const requireInternalToken = (req, res, next) => {
+  const token = req.headers['x-internal-token'];
+  if (!token || token !== process.env.INTERNAL_SERVICE_TOKEN) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+};
+
 // Feedback the ai-service pulls for retraining
-router.get('/pending', async (req, res, next) => {
+router.get('/pending', requireInternalToken, async (req, res, next) => {
   try {
     const items = await Feedback.find({ used: false }).select('text correct -_id');
     res.json({ count: items.length, items });
   } catch (e) { next(e); }
 });
-// feedback.js — public (above authMiddleware), like /pending
-router.post('/mark-used', async (req, res, next) => {
+router.post('/mark-used', requireInternalToken, async (req, res, next) => {
   try {
     await Feedback.updateMany({ used: false }, { used: true });
     res.json({ message: 'marked used' });
