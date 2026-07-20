@@ -6,9 +6,16 @@ import authMiddleware from '../middleware/auth.js';
 
 const router = Router();
 
+// const redis = new Redis({
+//   host: process.env.REDIS_HOST || 'redis',
+//   port: process.env.REDIS_PORT || 6379,
+// });
+
 const redis = new Redis({
-  host: process.env.REDIS_HOST || 'redis',
-  port: process.env.REDIS_PORT || 6379,
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+  tls: process.env.NODE_ENV === 'production' ? {} : undefined,
 });
 
 const CACHE_TTL_SECONDS = 300;

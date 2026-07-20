@@ -75,6 +75,8 @@ SMS → ML classifies category (with confidence) → Rule engine decides action 
 
 ML handles perception, rules handle policy — user-editable, able to override the model. This mirrors production spam filters: a learned classifier feeding a deterministic policy layer, not one black box doing both.
 
+**Note:** a server-side SMS queue (BullMQ + Redis) was initially built for backend classification but removed once the architecture evolved to on-device TFLite inference — SMS never reaches the server, preserving privacy. Redis stays in the stack purely as the analytics response cache.
+
 ---
 
 ## Tech Stack
@@ -85,8 +87,7 @@ ML handles perception, rules handle policy — user-editable, able to override t
 | SMS bridge | Custom Kotlin `@ReactMethod` module | Community RN SMS libraries are deprecated/unmaintained; a hand-built bridge avoids inheriting their bugs. |
 | Backend | Node.js + Express 5 (ESM) | Familiar, fast to iterate, modern module syntax throughout. |
 | Auth | JWT (access + refresh) + `google-auth-library` | Google auth uses the **idToken** flow — no web-redirect dance for a native app. |
-| Queue | BullMQ + Redis | Decouples SMS ingestion from processing, with retry semantics for free. |
-| Cache | Redis, same instance, second role | Doubles as BullMQ's broker and a cache-aside layer for `/analytics/summary` — read-heavy, write-light, staleness-tolerant: exactly a cache's use case, not worth a second system. |
+| Cache | Redis for analytics response caching | Cache-aside layer for `/analytics/summary` — read-heavy, write-light, staleness-tolerant: exactly a cache's use case, 5-minute TTL, invalidated on write. |
 | Database | MongoDB + Mongoose | Schema flexibility fits user-defined rules better than a rigid relational schema. |
 | ML model | Fine-tuned DistilBERT → TFLite, fp32 | See [The Model Decision](#d-the-model-decision) — chosen over 4x-faster MobileBERT because it generalizes on the metric that matters. |
 | ML serving | FastAPI (Python) | Async handling, Pydantic validation, auto OpenAPI docs, native fit with `transformers`. |
@@ -195,7 +196,7 @@ fp32 shipped after confirming bit-exact PyTorch parity (16/16, max logit diff 0.
 
 ## Build Journey (Days 1–20)
 
-**Phase 1 — Backend (Days 1–4).** Monorepo + Docker Compose + JWT auth (register/login/refresh with rotation) + Google OAuth via mobile idToken. SMS rule schema, full CRUD, pagination, delta sync. Rule engine wired to BullMQ + Redis. Device registration, server-side `lastSyncAt`, centralized error handling.
+**Phase 1 — Backend (Days 1–4).** Monorepo + Docker Compose + JWT auth (register/login/refresh with rotation) + Google OAuth via mobile idToken. SMS rule schema, full CRUD, pagination, delta sync. A BullMQ + Redis queue was initially built for server-side SMS processing (see note below). Device registration, server-side `lastSyncAt`, centralized error handling.
 
 **Phase 2 — Android app (Days 5–8).** Custom Kotlin SMS module (`SmsModule`, `SmsPackage`, `SmsReceiver`) replacing deprecated libraries. MMKV local caching behind a repository pattern. Axios client with JWT interceptor and 401 auto-refresh with request queuing. WorkManager auto-clean scheduler and the default-SMS-app implementation (hardest problem in this phase), plus real-time updates via `DeviceEventEmitter`.
 
@@ -281,7 +282,7 @@ npx react-native run-android
 | `JWT_SECRET` / `JWT_REFRESH_SECRET` | Sign access/refresh tokens (≥32 chars in prod) | Yes |
 | `JWT_EXPIRES_IN` / `JWT_REFRESH_EXPIRES_IN` | Token lifetimes | No |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google idToken verification | `CLIENT_SECRET` yes |
-| `REDIS_HOST` / `REDIS_PORT` | Shared by BullMQ and analytics cache | No |
+| `REDIS_HOST` / `REDIS_PORT` | Analytics response cache | No |
 | `ALLOWED_ORIGINS` | CORS allowlist | No |
 | `INTERNAL_SERVICE_TOKEN` | ai-service ↔ backend feedback calls | Yes |
 | `NODE_ENV` | Enables production-only checks | No |
@@ -290,6 +291,21 @@ npx react-native run-android
 **Docker Compose services:** `backend`, `ai-service`, `mongo:7`, `redis:7-alpine`, `redisinsight` (optional inspection UI).
 
 **Known production gaps:** certificate pinning; rate-limit store needs Redis past one instance; retrain shares the `ai-service` container with `/classify`, competing for CPU — should be a dedicated worker at scale.
+
+
+### Production Release Blockers
+
+**Model size:** The deployed DistilBERT model is 260MB (fp32). Play Store recommends 
+APKs under 150MB. Post-training int8 quantization was attempted but blocked by TFLite's 
+`EMBEDDING_LOOKUP` kernel requiring `zero_point=0`, which symmetric quantization violates. 
+The correct path is quantization-aware training (QAT) during fine-tuning, targeting 
+15-20MB with minimal accuracy loss.
+
+**Language coverage:** Model trained on English SMS data (UCI + synthetic Indian-English). 
+Degrades on Hindi, Tamil, Telugu, or code-switched SMS common in India. Production path: 
+fine-tune on a multilingual base (mBERT or IndicBERT) — architecture supports model 
+swapping via the planned OTA update pipeline.
+
 
 ---
 

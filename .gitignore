@@ -181,5 +181,5 @@ app/ai-service/models/
 model_fp32.tflite
 tokenizer_config.json
 quntization.ipynb
-sms_classifier_fp32.tflite
+# sms_classifier_fp32.tflite
 models_experiments/

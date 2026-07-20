@@ -12,7 +12,6 @@ import authMiddleWare from "./middleware/auth.js";
 import User from "./models/Users.js";
 import authRouter from './routes/auth.js'
 import ruleRouter from "./routes/rules.js"
-import smsRouter from './routes/sms.js';
 import deviceRouter from './routes/devices.js'
 import errorhandler from "./middleware/errors.js";
 import feedbackRouter from './routes/feedback.js'
@@ -41,6 +40,10 @@ app.use(cors({
 app.use(express.json())
 app.use(mongoSanitizeMiddleware);
 
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+})
+
 app.use('/api/auth',authRouter)
 
 // generalLimiter applies to everything mounted after this point — auth routes
@@ -48,7 +51,6 @@ app.use('/api/auth',authRouter)
 app.use(generalLimiter);
 
 app.use('/api/rules',ruleRouter)
-app.use('/api/sms', smsRouter);
 app.use('/api/device',deviceRouter);
 app.use('/api/feedback', feedbackRouter);
 app.use('/api/analytics', analyticsRouter);
