@@ -2,7 +2,10 @@
 
 Privacy-first Android SMS manager that classifies every incoming message on-device with a fine-tuned DistilBERT model and auto-cleans expired OTPs — no message text ever leaves the phone.
 
-**Live demo:** backend — `[backend URL placeholder]` · ai-service — `[ai-service URL placeholder]` · demo video — `[demo video placeholder]`
+**Live demo:** 
+- backend — https://vigilant-renewal-production-73cc.up.railway.app
+- ai-service — `[ai-service URL placeholder]` 
+- demo video — `[demo video placeholder]`
 
 ### Screenshots
 

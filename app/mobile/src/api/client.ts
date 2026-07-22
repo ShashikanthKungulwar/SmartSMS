@@ -3,7 +3,9 @@ import { TokenStorage } from '../storage/TokenStorage';
 
 // Use 10.0.2.2 for Android emulator to reach host machine's localhost
 // TODO(security): no certificate pinning yet — see "Known production gaps" in app/mobile/README.md
-const BASE_URL = 'http://10.0.2.2:3000/api';
+// const BASE_URL = 'http://10.0.2.2:3000/api';
+const BASE_URL = 'https://vigilant-renewal-production-73cc.up.railway.app/api';
+
 
 export const apiClient = axios.create({ baseURL: BASE_URL });
 
